@@ -1,0 +1,8 @@
+{
+  "_comment": "Per-target curated hint lists. Words must exist in the vocab (the build validates and drops any that don't, backfilling from neighbours). Use for targets whose GloVe neighbours are polysemous/junk. Keep words concrete and on-theme. Provide 10+ so backfill doesn't reintroduce the wrong sense.",
+  "bee": ["honey", "hive", "wasp", "insect", "nectar", "sting", "swarm", "pollen", "flower", "buzzing"],
+  "penguin": ["antarctic", "arctic", "iceberg", "colony", "emperor", "waddle", "feathers", "ice", "bird", "fish", "krill", "chick", "wings", "beak"],
+  "anchor": ["ship", "harbor", "mooring", "chain", "sailor", "nautical", "dock", "vessel", "naval", "boat", "harbour", "port"],
+  "knight": ["medieval", "armor", "sword", "castle", "noble", "templar", "knighthood", "chivalry", "lance", "squire", "crusader", "shield"],
+  "tiger": ["leopard", "lion", "jaguar", "panther", "cub", "stripes", "jungle", "predator", "feline", "prey", "bengal", "cat"]
+}

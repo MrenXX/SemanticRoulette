@@ -1,0 +1,565 @@
+/* HUD + components. All colors come from theme tokens (see src/theme). */
+
+#hud-root {
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-sans);
+}
+
+/* Only interactive clusters capture pointer input; all other HUD layers
+   (.hud-spacer, .guesses, .rightcol, .result, .toast) stay click-through so
+   drag-to-rotate / zoom reach the canvas behind the HUD. The end .banner
+   manages its own pointer-events (none when hidden, auto via .banner.show). */
+.topbar-right,
+.guess-form,
+.controls,
+.scene-controls,
+.guesses,
+.leaderboard {
+  pointer-events: auto;
+}
+
+/* ---- top bar ---- */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: clamp(0.9rem, 2.2vw, 1.6rem) clamp(1rem, 3vw, 2.2rem);
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.05;
+}
+.brand h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.05rem, 2.4vw, 1.5rem);
+  letter-spacing: -0.01em;
+}
+.brand small {
+  color: var(--text-dim);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-top: 0.25rem;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding: 0.35rem 0.85rem;
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius);
+  background: var(--panel);
+  backdrop-filter: blur(10px);
+}
+.stat b {
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  font-variant-numeric: tabular-nums;
+}
+.stat span {
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+/* ---- icon / pill buttons ---- */
+.icon-btn,
+.pill-btn {
+  font-family: var(--font-sans);
+  color: var(--text);
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius);
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+  transition: border-color 0.18s ease, transform 0.18s ease, background 0.18s ease;
+}
+.icon-btn {
+  width: 2.4rem;
+  height: 2.4rem;
+  display: grid;
+  place-items: center;
+  font-size: 1rem;
+}
+.pill-btn {
+  padding: 0.55rem 1.05rem;
+  font-size: 0.86rem;
+  letter-spacing: 0.01em;
+}
+.icon-btn:hover,
+.pill-btn:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+.pill-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+.pill-btn.accent {
+  background: var(--accent-soft);
+  border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+}
+
+/* ---- spacer pushes the play area to the bottom ---- */
+.hud-spacer {
+  flex: 1 1 auto;
+}
+
+/* ---- guesses list ---- */
+.guesses {
+  position: absolute;
+  top: clamp(4.5rem, 12vh, 7rem);
+  left: clamp(1rem, 3vw, 2.2rem);
+  width: min(20rem, 30vw);
+  max-height: 56vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding-right: 0.3rem;
+  scrollbar-width: thin;
+}
+.guess-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius);
+  background: var(--panel);
+  backdrop-filter: blur(8px);
+  animation: rowIn 0.3s ease both;
+}
+.guess-row.best {
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+}
+.guess-row .word {
+  font-weight: 500;
+  text-transform: lowercase;
+}
+.guess-row .meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.guess-row .rank {
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+}
+.guess-row .score {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.95rem;
+  min-width: 1.8rem;
+  text-align: right;
+}
+.guess-row .bar {
+  grid-column: 1 / -1;
+  height: 3px;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--text-dim) 30%, transparent);
+  overflow: hidden;
+}
+.guess-row .bar > i {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 40%, var(--text)));
+}
+
+@keyframes rowIn {
+  from { opacity: 0; transform: translateX(-8px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ---- play area (bottom) ---- */
+.playarea {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0 1rem clamp(1.2rem, 4vh, 2.6rem);
+}
+
+.guess-form {
+  display: flex;
+  gap: 0.5rem;
+  width: min(34rem, 92vw);
+}
+.guess-input {
+  flex: 1 1 auto;
+  font-family: var(--font-sans);
+  font-size: 1.05rem;
+  color: var(--text);
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius);
+  padding: 0.85rem 1.1rem;
+  backdrop-filter: blur(12px);
+  outline: none;
+  transition: border-color 0.18s ease;
+}
+.guess-input::placeholder { color: var(--text-dim); }
+.guess-input:focus { border-color: var(--accent); }
+.guess-input.shake { animation: shake 0.4s ease; }
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+
+.controls {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* ---- result card ---- */
+.result {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(8.5rem, 22vh, 12rem);
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 1rem 1.6rem;
+  border: 1px solid var(--panel-border);
+  border-radius: calc(var(--radius) * 1.3);
+  background: var(--panel);
+  backdrop-filter: blur(14px);
+  box-shadow: var(--shadow);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease, visibility 0s linear 0.25s;
+}
+.result.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(-6px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.result .big {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: clamp(2.4rem, 8vw, 3.4rem);
+  font-weight: 600;
+  line-height: 1;
+}
+.result .label {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+}
+.result .sub {
+  font-size: 0.76rem;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+}
+.result .word {
+  font-size: 0.95rem;
+  text-transform: lowercase;
+  color: var(--text-dim);
+  margin-bottom: 0.15rem;
+}
+
+/* ---- toast / assist ---- */
+.toast {
+  position: absolute;
+  left: 50%;
+  top: clamp(4.5rem, 12vh, 7rem);
+  transform: translateX(-50%) translateY(-10px);
+  padding: 0.6rem 1rem;
+  border-radius: var(--radius);
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  backdrop-filter: blur(12px);
+  font-size: 0.9rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ---- end banner (win / reveal) ---- */
+.banner {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--bg) 55%, transparent);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.35s ease, visibility 0s linear 0.35s;
+}
+.banner.show {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition: opacity 0.35s ease;
+}
+.banner .card {
+  text-align: center;
+  padding: 2rem 2.4rem;
+  border: 1px solid var(--panel-border);
+  border-radius: calc(var(--radius) * 1.4);
+  background: var(--panel);
+  backdrop-filter: blur(16px);
+  box-shadow: var(--shadow);
+  max-width: 26rem;
+}
+.banner h2 {
+  font-family: var(--font-display);
+  margin: 0 0 0.4rem;
+  font-size: 1.8rem;
+}
+.banner .solution {
+  font-size: 1.1rem;
+  margin: 0.4rem 0 1rem;
+}
+.banner .solution b { color: var(--accent); text-transform: lowercase; }
+.banner p { color: var(--text-dim); margin: 0 0 1.4rem; }
+
+/* ---- 3D guess labels (CSS2D) ---- */
+.marker-label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text);
+  background: color-mix(in srgb, var(--bg) 70%, transparent);
+  border: 1px solid var(--panel-border);
+  border-radius: 5px;
+  padding: 0.1rem 0.4rem;
+  white-space: nowrap;
+  transform: translateY(-2px);
+  text-transform: lowercase;
+}
+.marker-label--target {
+  color: var(--bg);
+  background: var(--accent);
+  border-color: var(--accent);
+  font-weight: 600;
+}
+.marker-label--hint {
+  color: var(--good);
+  border-color: color-mix(in srgb, var(--good) 50%, transparent);
+  font-style: italic;
+}
+
+/* ---- bottom-left scene selectors (deep space) ---- */
+.scene-controls {
+  position: absolute;
+  left: clamp(1rem, 3vw, 2.2rem);
+  bottom: clamp(1rem, 4vh, 2.4rem);
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  z-index: 2;
+}
+.segmented {
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+}
+.seg-title {
+  font-size: 0.6rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  padding-left: 0.15rem;
+}
+.seg-row {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius);
+  background: var(--panel);
+  backdrop-filter: blur(10px);
+  width: fit-content;
+}
+.seg-btn {
+  font-family: var(--font-sans);
+  font-size: 0.74rem;
+  color: var(--text-dim);
+  background: transparent;
+  border: none;
+  border-radius: calc(var(--radius) - 3px);
+  padding: 0.32rem 0.6rem;
+  cursor: pointer;
+  transition: background 0.16s ease, color 0.16s ease;
+  white-space: nowrap;
+}
+.seg-btn:hover { color: var(--text); }
+.seg-btn[aria-pressed="true"] {
+  color: var(--text);
+  background: var(--accent-soft);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 45%, transparent);
+}
+
+@media (max-width: 640px) {
+  .scene-controls { display: none !important; }
+}
+
+/* ---- right column: hints + leaderboard ---- */
+.rightcol {
+  position: absolute;
+  top: clamp(4.5rem, 12vh, 7rem);
+  right: clamp(1rem, 3vw, 2.2rem);
+  width: min(15rem, 26vw);
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  max-height: 70vh;
+}
+
+.hints-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.hint-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.6rem;
+  border: 1px solid color-mix(in srgb, var(--good) 35%, var(--panel-border));
+  border-radius: var(--radius);
+  background: var(--panel);
+  backdrop-filter: blur(8px);
+  animation: rowIn 0.3s ease both;
+}
+.hint-tag {
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--good);
+  font-family: var(--font-mono);
+}
+.hint-word {
+  font-weight: 500;
+  text-transform: lowercase;
+}
+.hint-score {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.85rem;
+}
+
+/* ---- leaderboard ---- */
+.leaderboard {
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius);
+  background: var(--panel);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 0.75rem;
+  overflow-y: auto;
+}
+.leaderboard h3 {
+  margin: 0 0 0.5rem;
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  font-weight: 600;
+}
+.lb-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  counter-reset: lb;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+.lb-list li {
+  counter-increment: lb;
+  display: grid;
+  grid-template-columns: 1.2rem 1fr auto auto;
+  align-items: baseline;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  padding: 0.12rem 0;
+}
+.lb-list li::before {
+  content: counter(lb);
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+}
+.lb-word {
+  text-transform: lowercase;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.lb-score {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+.lb-meta {
+  font-size: 0.66rem;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+}
+.lb-new {
+  color: var(--accent);
+  animation: lbPulse 1.4s ease;
+}
+.lb-empty {
+  color: var(--text-dim);
+  font-size: 0.78rem;
+  display: block !important;
+  grid-column: 1 / -1;
+}
+.lb-empty::before {
+  content: "" !important;
+  counter-increment: none !important;
+}
+@keyframes lbPulse {
+  0%, 100% { background: transparent; }
+  30% { background: var(--accent-soft); }
+}
+
+@media (max-width: 640px) {
+  .guesses {
+    width: 9.5rem;
+    max-height: 34vh;
+    font-size: 0.85rem;
+  }
+  .rightcol {
+    width: 9.5rem;
+    max-height: 50vh;
+  }
+}
+

@@ -1,0 +1,89 @@
+# Semantic Roulette — curated playable targets.
+# A small, highly-varied set of iconic, guessable everyday words.
+# All must also exist in cloud-words.txt (the build verifies and adds if missing).
+
+# nature
+ocean
+mountain
+forest
+river
+desert
+volcano
+rainbow
+thunder
+island
+waterfall
+
+# animals
+tiger
+elephant
+dolphin
+penguin
+butterfly
+spider
+eagle
+snake
+owl
+bee
+
+# food and drink
+coffee
+pizza
+banana
+chocolate
+honey
+lemon
+cheese
+mushroom
+
+# music
+guitar
+piano
+violin
+drum
+
+# people and characters
+doctor
+soldier
+pirate
+wizard
+knight
+clown
+king
+
+# transport
+rocket
+train
+bicycle
+anchor
+submarine
+helicopter
+
+# objects
+candle
+mirror
+clock
+hammer
+umbrella
+telescope
+compass
+ladder
+
+# places
+castle
+lighthouse
+hospital
+library
+garden
+bridge
+
+# time and seasons
+winter
+sunrise
+
+# materials
+diamond
+
+# actions
+whisper
+dance

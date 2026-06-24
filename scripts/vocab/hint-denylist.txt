@@ -1,0 +1,72 @@
+# Words that must NEVER be used as a hint. One per line; '#' starts a comment.
+# These are GloVe neighbours that are real tokens but useless/confusing as hints:
+# interjections, letter-names (the "bee/dee/gee" phonetic cluster), fillers, and
+# non-words. Consumed by scripts/build-hints.ts (and scripts/build-vectors.ts).
+# Grow this list during curation rather than hand-editing public/data/targets.json.
+
+# interjections / fillers
+uh
+um
+umm
+hmm
+mm
+mmm
+eh
+ah
+ahh
+oh
+ohh
+er
+huh
+huh-uh
+yeah
+yea
+nah
+naw
+ya
+yo
+ho
+lo
+la
+na
+da
+ooh
+aww
+ow
+ugh
+meh
+duh
+heh
+hee
+haha
+lol
+
+# letter-names / phonetic-alphabet junk
+ay
+bee
+cee
+dee
+ee
+ef
+gee
+ree
+vee
+wee
+em
+en
+ess
+tee
+wy
+zee
+zed
+
+# misc non-words / fragments seen as neighbours
+roo
+mahr
+ur
+pee
+poo
+ka
+ki
+ne
+nb

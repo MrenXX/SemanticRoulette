@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.cache/
+.DS_Store
+*.local
+.vite/
+# Large GloVe source download (128MB) — regenerate via README; the small
+# quantized output in public/data/ is committed instead.
+scripts/vocab/glove-100.gz
+scripts/vocab/google-common.txt
+# Verification screenshots
+shots/

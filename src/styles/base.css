@@ -1,0 +1,82 @@
+:root {
+  /* Fallback tokens (overridden by applyTheme). */
+  --bg: #05060a;
+  --panel: rgba(12, 15, 23, 0.62);
+  --panel-border: rgba(150, 170, 210, 0.14);
+  --text: #e8edf6;
+  --text-dim: #8a93a6;
+  --accent: #7fb4ff;
+  --accent-soft: rgba(127, 180, 255, 0.16);
+  --good: #9fe7c5;
+  --bad: #e69aa0;
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-display: "Inter", system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", monospace;
+  --radius: 12px;
+  --shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow: hidden;
+}
+
+#app {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+}
+
+/* Full-bleed 3D scene behind the HUD. */
+#scene-root {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+#scene-root canvas {
+  display: block;
+}
+
+#hud-root {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  /* HUD is click-through by default so drags reach the 3D canvas behind it.
+     Interactive clusters re-enable pointer-events explicitly (see hud.css).
+     The previous `#hud-root > * { pointer-events: auto }` made the full-height
+     .hud-spacer + side columns swallow the mouse, killing drag-to-rotate. */
+  pointer-events: none;
+}
+
+#loading-root {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
