@@ -1,0 +1,164 @@
+/* In-character onboarding "briefing" modal. Reuses the global theme tokens + the
+   glassmorphism look from the HUD. Compact mission-log styling; meant to be read in
+   ~15s and fit without scrolling on a laptop. */
+
+.onboarding {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 1.2rem;
+  background: color-mix(in srgb, var(--bg) 62%, transparent);
+  backdrop-filter: blur(6px);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.3s ease, visibility 0s linear 0.3s;
+}
+.onboarding.show {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition: opacity 0.3s ease;
+}
+
+.onboarding-panel {
+  position: relative;
+  width: min(34rem, 94vw);
+  max-height: 88dvh;
+  overflow-y: auto;
+  padding: clamp(1.4rem, 3vw, 2rem);
+  border: 1px solid var(--panel-border);
+  border-radius: calc(var(--radius) * 1.5);
+  background: var(--panel);
+  backdrop-filter: blur(18px);
+  box-shadow: var(--shadow);
+  transform: translateY(10px) scale(0.98);
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.onboarding.show .onboarding-panel {
+  transform: none;
+}
+
+.onboarding-close {
+  position: absolute;
+  top: 0.7rem;
+  right: 0.7rem;
+  width: 2rem;
+  height: 2rem;
+  display: grid;
+  place-items: center;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  background: transparent;
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: color 0.18s ease, border-color 0.18s ease;
+}
+.onboarding-close:hover {
+  color: var(--text);
+  border-color: var(--accent);
+}
+
+.onboarding-title {
+  margin: 0 2.2rem 0.2rem 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.3rem, 3.4vw, 1.7rem);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  outline: none;
+}
+.onboarding-subtitle {
+  margin: 0 0 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.onboarding-hook {
+  margin: 0 0 1.15rem;
+  color: var(--text);
+  font-size: 0.97rem;
+  line-height: 1.5;
+}
+.onboarding-hook em {
+  font-style: italic;
+  color: var(--accent);
+}
+
+.onboarding-rules {
+  list-style: none;
+  margin: 0 0 1.3rem;
+  padding: 0;
+  counter-reset: rule;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+.onboarding-rules li {
+  counter-increment: rule;
+  position: relative;
+  padding-left: 2.3rem;
+  font-size: 0.89rem;
+  line-height: 1.45;
+  color: var(--text-dim);
+}
+.onboarding-rules li::before {
+  content: counter(rule, decimal-leading-zero);
+  position: absolute;
+  left: 0;
+  top: 0.05rem;
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  border-radius: 5px;
+  padding: 0.08rem 0.32rem;
+}
+.onboarding-rules strong {
+  color: var(--text);
+  font-weight: 600;
+}
+.onboarding-rules em {
+  font-style: italic;
+  color: var(--text);
+}
+.onboarding-rules code {
+  font-family: var(--font-mono);
+  font-size: 0.82em;
+  color: var(--text);
+  background: color-mix(in srgb, var(--text-dim) 18%, transparent);
+  border-radius: 4px;
+  padding: 0.03rem 0.32rem;
+}
+.onboarding-rules code.cost {
+  color: var(--bad);
+  background: color-mix(in srgb, var(--bad) 14%, transparent);
+}
+.onboarding-rules .heat {
+  font-family: var(--font-mono);
+  font-size: 0.82em;
+  font-weight: 600;
+  background: linear-gradient(90deg, var(--accent), var(--bad));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.onboarding-cta {
+  width: 100%;
+  padding: 0.8rem;
+  font-size: 0.95rem;
+}
+.onboarding-caption {
+  margin: 0.6rem 0 0;
+  text-align: center;
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+}

@@ -10,3 +10,5 @@ scripts/vocab/glove-100.gz
 scripts/vocab/google-common.txt
 # Verification screenshots
 shots/
+# Git bundles are build artifacts, never committed into the repo
+*.bundle

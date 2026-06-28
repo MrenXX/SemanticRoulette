@@ -20,6 +20,8 @@ export interface HUDOptions {
   mechanics: Choice[];
   currentMechanic: string;
   setMechanic: (id: string) => void;
+  /** Open the in-character onboarding "briefing" modal. */
+  showGuide: () => void;
 }
 
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, className?: string, html?: string): HTMLElementTagNameMap[K] {
@@ -49,6 +51,7 @@ export class HUD {
   private toastEl!: HTMLElement;
   private bannerEl!: HTMLElement;
   private soundBtn!: HTMLButtonElement;
+  private briefingBtn!: HTMLButtonElement;
   private controlsEl!: HTMLElement;
   private bodySel!: HTMLElement;
   private mechSel!: HTMLElement;
@@ -70,6 +73,11 @@ export class HUD {
     const brand = el("div", "brand", `<h1>Semantic Roulette</h1><small>guess by meaning</small>`);
 
     const right = el("div", "topbar-right");
+    this.briefingBtn = el("button", "pill-btn briefing-btn") as HTMLButtonElement;
+    this.briefingBtn.type = "button";
+    this.briefingBtn.title = "How to play";
+    this.briefingBtn.textContent = "Briefing";
+    this.briefingBtn.onclick = () => this.o.showGuide();
     this.soundBtn = el("button", "icon-btn");
     this.soundBtn.title = "Toggle sound";
     this.soundBtn.textContent = "♪";
@@ -82,7 +90,7 @@ export class HUD {
     this.bestEl = el("b", undefined, "—");
     best.append(this.bestEl, el("span", undefined, "best"));
 
-    right.append(this.soundBtn, best, bank);
+    right.append(this.briefingBtn, this.soundBtn, best, bank);
     topbar.append(brand, right);
 
     // Left column: guesses. Right column: hints + leaderboard.

@@ -6,6 +6,10 @@ const browser = await chromium.launch({
   args: ["--no-sandbox", "--disable-dev-shm-usage", "--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"],
 });
 const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+// Suppress the first-visit onboarding briefing for the main gameplay tests (it would
+// otherwise overlay the HUD and block clicks). A dedicated fresh-context test below
+// exercises the briefing on a true first visit.
+await page.addInitScript(() => { try { localStorage.setItem("sr:onboarded", "true"); } catch { /* ignore */ } });
 const errors = [];
 page.on("pageerror", (e) => errors.push(e.message));
 page.on("console", (m) => { if (m.type() === "error") errors.push("CONSOLE: " + m.text()); });
@@ -118,6 +122,34 @@ const hintWords = await page.evaluate(() => window.__sr.engine.revealedHints.map
 out.hintWords = hintWords;
 out.hintsDistinct = hintWords.length >= 2 && new Set(hintWords).size === hintWords.length;
 
+// ---- Onboarding briefing: in a FRESH context (true first visit, no init script) it
+//      auto-opens; CTA dismiss persists the flag; reload doesn't reshow; the Briefing
+//      button re-opens it; Esc closes it. ----
+const ctx2 = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+const page2 = await ctx2.newPage();
+page2.on("pageerror", (e) => errors.push("BRIEF: " + e.message));
+page2.on("console", (m) => { if (m.type() === "error") errors.push("BRIEF CONSOLE: " + m.text()); });
+const shown = () => page2.evaluate(() => document.querySelector(".onboarding")?.classList.contains("show") === true);
+await page2.goto(`${BASE}/?body=star&reveal=orbital`, { waitUntil: "load" });
+await page2.waitForSelector(".guess-input", { timeout: 60000 });
+await page2.waitForTimeout(400);
+out.briefingFirstVisit = await shown();
+await page2.click(".onboarding-cta");
+await page2.waitForTimeout(250);
+out.briefingDismissed = (await shown()) === false
+  && (await page2.evaluate(() => localStorage.getItem("sr:onboarded") === "true"));
+await page2.reload({ waitUntil: "load" });
+await page2.waitForSelector(".guess-input", { timeout: 60000 });
+await page2.waitForTimeout(350);
+out.briefingNotRepeat = (await shown()) === false;
+await page2.click(".briefing-btn");
+await page2.waitForTimeout(250);
+out.briefingReopen = await shown();
+await page2.keyboard.press("Escape");
+await page2.waitForTimeout(250);
+out.briefingEsc = (await shown()) === false;
+await ctx2.close();
+
 console.log(JSON.stringify(out, null, 2));
 console.log("pageerrors:", errors.length);
 for (const e of errors.slice(0, 12)) console.log("  • " + e);
@@ -129,6 +161,8 @@ const ok = mechOk &&
   out.sanitized?.body === "star" && out.sanitized?.reveal === "orbital" && !out.sanitized?.theme &&
   out.oov?.includes("not in word list") &&
   out.hintsDistinct === true &&
+  out.briefingFirstVisit === true && out.briefingDismissed === true &&
+  out.briefingNotRepeat === true && out.briefingReopen === true && out.briefingEsc === true &&
   out.afterStress === true && out.playableAfterStress === true && errors.length === 0;
 console.log("RESULT:", ok ? "PASS" : "FAIL");
 process.exit(ok ? 0 : 1);

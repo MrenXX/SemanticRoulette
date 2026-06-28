@@ -1,6 +1,7 @@
 import "./styles/base.css";
 import "./styles/loading.css";
 import "./styles/hud.css";
+import "./styles/onboarding.css";
 
 import { applyTheme } from "./theme/tokens.js";
 import { resolveTheme, DEFAULT_THEME } from "./theme/index.js";
@@ -13,6 +14,7 @@ import { BODY_KINDS, BODY_LABELS, type BodyKind } from "./viz/bodies/index.js";
 import { MECHANIC_IDS, MECHANIC_LABELS, type MechanicId } from "./viz/reveals/index.js";
 import { HUD, type Choice } from "./ui/hud.js";
 import { LoadingScreen } from "./ui/loading.js";
+import { OnboardingModal } from "./ui/onboarding.js";
 
 const params = () => new URLSearchParams(location.search);
 const pref = (key: string, fallback: string): string =>
@@ -92,14 +94,20 @@ async function main() {
     persist("reveal", mechanicId);
   };
 
+  const onboarding = new OnboardingModal();
+
   const hud = new HUD({
     engine, presenter: deep, sound,
     bodies: bodyChoices, currentBody: bodyKind, setBody,
     mechanics: mechanicChoices, currentMechanic: mechanicId, setMechanic,
+    showGuide: () => onboarding.open(),
   });
   hud.mount(hudRoot);
 
-  (window as unknown as { __sr: unknown }).__sr = { engine, setBody, setMechanic, hud, deep };
+  // First-time players get the in-character briefing; returning players don't.
+  onboarding.maybeShowFirstVisit();
+
+  (window as unknown as { __sr: unknown }).__sr = { engine, setBody, setMechanic, hud, deep, onboarding };
 }
 
 void main();
