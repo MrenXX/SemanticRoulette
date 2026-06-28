@@ -1,5 +1,5 @@
 /**
- * First-visit onboarding "briefing" — an in-character modal that teaches the rules
+ * First-visit onboarding "briefing": an in-character modal that teaches the rules
  * in deep-space role-play (help Tom decode the hidden glyph). Shown once (gated by a
  * `sr:onboarded` localStorage flag) and re-openable anytime via the HUD's Briefing
  * button. Self-contained: builds its own DOM under <body>, handles focus-trap, Esc /
@@ -13,7 +13,7 @@ const RULES: { lead: string; body: string }[] = [
   {
     lead: "Cast a word",
     body:
-      "scored by <em>meaning</em>, not spelling — closer meaning lands nearer the centre. " +
+      "scored by <em>meaning</em>, not spelling: the nearer in meaning, the tighter its orbit. " +
       "Variants count (<code>oceans</code> → <code>ocean</code>); unknown words are rejected.",
   },
   {
@@ -25,7 +25,7 @@ const RULES: { lead: string; body: string }[] = [
   {
     lead: "Mind the bank",
     body:
-      'you start with <code>1000</code> energy — wrong guess <code class="cost">−10</code>, ' +
+      'you start with <code>1000</code> energy; wrong guess <code class="cost">−10</code>, ' +
       'Hint <code class="cost">−75</code> (max <code>3</code>). A hint reveals a related glyph near the target.',
   },
   {
@@ -76,16 +76,22 @@ export class OnboardingModal {
     hook.className = "onboarding-hook";
     hook.id = "onboard-hook";
     hook.innerHTML =
-      "The core is failing. Tom has trapped one hidden glyph — a <em>word</em> — inside the " +
+      "The core is failing. Tom has trapped one hidden glyph, a <em>word</em>, inside the " +
       "central body. Name it before the map goes dark.";
 
     const list = document.createElement("ol");
     list.className = "onboarding-rules";
     for (const r of RULES) {
       const li = document.createElement("li");
-      li.innerHTML = `<strong>${r.lead}</strong> — ${r.body}`;
+      li.innerHTML = `<strong>${r.lead}</strong>: ${r.body}`;
       list.appendChild(li);
     }
+
+    const modeTip = document.createElement("p");
+    modeTip.className = "onboarding-tip";
+    modeTip.innerHTML =
+      "Body (Star or Black hole) sets the central object, purely visual. " +
+      "Reveal picks the animation: Orbital Roulette (spirals in), Supernova Snap (cosmic blast), or Classic (flicker and settle).";
 
     const cta = document.createElement("button");
     cta.type = "button";
@@ -97,7 +103,7 @@ export class OnboardingModal {
     caption.className = "onboarding-caption";
     caption.textContent = "Tom is waiting at the core.";
 
-    this.panel.append(close, this.title, subtitle, hook, list, cta, caption);
+    this.panel.append(close, this.title, subtitle, hook, list, modeTip, cta, caption);
     this.root.appendChild(this.panel);
 
     // Backdrop click (outside the panel) closes.

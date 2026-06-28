@@ -149,6 +149,17 @@
   color: transparent;
 }
 
+.onboarding-tip {
+  margin: -0.4rem 0 1.15rem;
+  padding: 0.55rem 0.75rem;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--text-dim);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+  border-radius: var(--radius);
+}
+
 .onboarding-cta {
   width: 100%;
   padding: 0.8rem;
