@@ -5,6 +5,8 @@ guess is scored by **meaning** (not spelling), shown as a 0–100 score with dec
 vocabulary, and a temperature label (Freezing → Boiling). Every guess is revealed with a satisfying
 slot‑machine animation. Fully client‑side, no backend.
 
+### ▶ [Play it live](https://semanticroulette.vercel.app)
+
 ## How it plays
 - Type a word. Its **score** reflects how close it is in meaning to the target — e.g. `#7 of 40,000`,
   `80.38`, "Hot". Closer = higher.
