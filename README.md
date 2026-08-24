@@ -52,21 +52,21 @@ Body and reveal mechanic are remembered (localStorage + URL). The world respects
 `prefers-reduced-motion` and has a mutable synth soundtrack.
 
 ## Run it
-```powershell
+```bash
 npm install
 npm run dev        # http://localhost:5173
 # or a production build:
 npm run build      # static site in dist/
 npm run preview    # http://localhost:4173
 ```
-Use Microsoft Edge or Chrome. The game is fully static; host `dist/` anywhere.
+Any modern WebGL2-capable browser works. The game is fully static; host `dist/` anywhere.
 
 ## Rebuilding the vectors / hints (optional)
 The shipped `public/data/*` is already built.
 
 **Regenerate just the hints** (fast; reuses the existing vectors, so guess **scores are unchanged**;
 the script hash‑asserts `vectors.bin`/`vocab.json` are untouched):
-```powershell
+```bash
 npm run test:hints   # unit tests for the meaning-level de-dup (sameConcept)
 npm run hints        # rewrite public/data/targets.json (dedup + quality filter)
 ```
@@ -77,9 +77,9 @@ Hint quality is curated as **data**, not by hand‑editing `targets.json`:
   diverse, in‑vocab hints with no meaning‑level duplicates.
 
 **Full rebuild from GloVe** (regenerates `vectors.bin` + `vocab.json` too):
-```powershell
+```bash
 # downloads ~128 MB GloVe once into scripts/vocab/glove-100.gz
-curl.exe -L -o scripts/vocab/glove-100.gz `
+curl -L -o scripts/vocab/glove-100.gz \
   "https://github.com/RaRe-Technologies/gensim-data/releases/download/glove-wiki-gigaword-100/glove-wiki-gigaword-100.gz"
 npm run feasibility   # sanity-check GloVe quality (gate)
 npm run vectors       # filter + int8-quantize -> public/data/ (shares the hint-selection logic)
@@ -93,8 +93,6 @@ words like "key" are auto‑dropped because their dominant sense is abstract).
 - `targets.json`: curated targets, each with precomputed hints de‑duplicated by meaning and spelling.
 
 ## Verify
-`scripts/gameplay.mjs` drives the app in Microsoft Edge via Playwright (both bodies × all reveal
-mechanics, hints, win, give‑up, new‑word, leaderboard, body switching, wheel‑zoom, drag‑to‑rotate,
-no‑stuck‑zoom, stale‑settings sanitize, OOV, a meaning‑level hint‑dedup assertion, and a mid‑reveal
-body‑switch stress test) asserting **0 console errors**. `npm run test:hints` unit‑tests the hint
-de‑dup heuristic.
+`scripts/gameplay.mjs` drives the full game end-to-end via Playwright (bodies, reveal mechanics, hints,
+scoring, win/give-up/new-word, camera controls, settings persistence, OOV handling), asserting
+**0 console errors**. `npm run test:hints` unit-tests the hint de-dup heuristic.
