@@ -39,16 +39,6 @@ The displayed score is a logarithmic transform of rank, not the raw cosine simil
 `100 * (1 - log(rank + 1) / log(vocabularySize + 1))`, clamped to 0-100. An exact canonical match
 scores 100 and wins. The separate bank score tracks guess and hint penalties.
 
-```mermaid
-flowchart LR
-  G[GloVe data] --> B[Offline build: filter, normalize, quantize]
-  B --> D[Static vectors, vocabulary, hints]
-  D --> V[Browser vector store]
-  V --> E[Game engine: rank, score, hints]
-  E --> UI[Three.js world and HUD]
-  E --> L[Local settings and best runs]
-```
-
 ## The deep‑space world
 One immersive Three.js world. The hidden target is a central **body** you choose (Star, or Black hole
 with a gravitationally‑lensed accretion disk), surrounded by temperature‑varied stars, planets, and
