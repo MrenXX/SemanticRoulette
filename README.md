@@ -22,15 +22,32 @@ slot‑machine animation. Fully client‑side, no backend.
 
 ## Semantics: precomputed word vectors
 Scoring uses **GloVe word vectors** (whole‑word co‑occurrence embeddings), not a neural sentence model.
-This gives true word association (key → lock/door, ocean → sea/waves) and avoids the subword bias of
-sentence models (where "key" and "keyboard" share a token and score falsely high). It's also a plain
-**lookup table**; instant, no model download, no inference; so the game feels snappy.
+Whole-word vectors fit this game because guesses are individual words, and a lookup table is small
+enough to score in the browser. The browser downloads the precomputed vector data once; it does not
+run a neural model or call an inference API. Associations still depend on GloVe's training corpus,
+and a word with several senses has only one vector.
 
 - Offline, `scripts/build-vectors.ts` filters GloVe‑100d to ~40k common words, L2‑normalizes, and
-  **int8‑quantizes** them into `public/data/vectors.bin` (~3.8 MB). Verified lossless for ranking
-  (9.8/10 nearest‑neighbour overlap vs fp32) by `scripts/feasibility-glove.ts`.
+  **int8-quantizes** them into `public/data/vectors.bin` (~3.8 MiB). Quantization is approximate:
+  `scripts/feasibility-glove.ts` compares the top-ten neighbors with fp32 for four sample words.
+  It checks for at least eight shared neighbors on average; it does not establish lossless ranking.
 - At runtime, `src/game/vectors.ts` loads the matrix once and ranks a guess against the whole
-  vocabulary with int8 dot products. All synchronous and instant.
+  vocabulary with int8 dot products. Similarities for the target are sorted once per round, and
+  later guesses use a binary search to find their rank.
+
+The displayed score is a logarithmic transform of rank, not the raw cosine similarity:
+`100 * (1 - log(rank + 1) / log(vocabularySize + 1))`, clamped to 0-100. An exact canonical match
+scores 100 and wins. The separate bank score tracks guess and hint penalties.
+
+```mermaid
+flowchart LR
+  G[GloVe data] --> B[Offline build: filter, normalize, quantize]
+  B --> D[Static vectors, vocabulary, hints]
+  D --> V[Browser vector store]
+  V --> E[Game engine: rank, score, hints]
+  E --> UI[Three.js world and HUD]
+  E --> L[Local settings and best runs]
+```
 
 ## The deep‑space world
 One immersive Three.js world. The hidden target is a central **body** you choose (Star, or Black hole
@@ -48,8 +65,8 @@ Selectable, satisfying gambles (bottom‑left selector, or `?reveal=`):
   out to its score radius, the camera gliding to track it.
 - **Classic** (`baseline`): the original flicker‑and‑settle.
 
-Body and reveal mechanic are remembered (localStorage + URL). The world respects
-`prefers-reduced-motion` and has a mutable synth soundtrack.
+Body and reveal mechanic are remembered through localStorage and URL parameters. The world respects
+`prefers-reduced-motion`, and the synth soundtrack can be muted.
 
 ## Run it
 ```bash
@@ -88,7 +105,7 @@ Curate the playable targets in `scripts/vocab/targets.txt` (concrete, single‑s
 words like "key" are auto‑dropped because their dominant sense is abstract).
 
 ## Data files (`public/data/`)
-- `vectors.bin`: Int8Array of 40,000 × 100 normalized GloVe vectors (~3.8 MB).
+- `vectors.bin`: Int8Array of 40,000 × 100 normalized GloVe vectors, quantized to int8 (~3.8 MiB).
 - `vocab.json`: the 40k word list (row order = vector index).
 - `targets.json`: curated targets, each with precomputed hints de‑duplicated by meaning and spelling.
 
