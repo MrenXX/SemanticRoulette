@@ -60,7 +60,7 @@ async function main() {
   const theme = applyTheme(resolveTheme(DEFAULT_THEME));
   // Resolve + sanitize persisted selections (covers stale ink / whitedwarf /
   // gravity-claw values from earlier versions), then re-persist the valid ones.
-  let bodyKind = (BODY_KINDS.includes(pref("body", "star") as BodyKind) ? pref("body", "star") : "star") as BodyKind;
+  let bodyKind = (BODY_KINDS.includes(pref("body", "blackhole") as BodyKind) ? pref("body", "blackhole") : "blackhole") as BodyKind;
   let mechanicId = (MECHANIC_IDS.includes(pref("reveal", "orbital") as MechanicId) ? pref("reveal", "orbital") : "orbital") as MechanicId;
   forget("theme");
   persist("body", bodyKind);

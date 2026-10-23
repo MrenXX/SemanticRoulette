@@ -158,7 +158,7 @@ const mechOk = ["star", "blackhole"].every((b) => ["orbital", "supernova", "base
 const ok = mechOk &&
   out.dragRotated === true && out.zoomOut === true && out.zoomIn === true &&
   out.noStuckZoom === true &&
-  out.sanitized?.body === "star" && out.sanitized?.reveal === "orbital" && !out.sanitized?.theme &&
+  out.sanitized?.body === "blackhole" && out.sanitized?.reveal === "orbital" && !out.sanitized?.theme &&
   out.oov?.includes("not in word list") &&
   out.hintsDistinct === true &&
   out.briefingFirstVisit === true && out.briefingDismissed === true &&

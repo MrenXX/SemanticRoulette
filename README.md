@@ -44,7 +44,7 @@ One immersive Three.js world. The hidden target is a central **body** you choose
 with a gravitationally‑lensed accretion disk), surrounded by temperature‑varied stars, planets, and
 nebula. **Click‑drag to rotate** the whole system (with inertia); **mouse‑wheel to zoom**. A guess lands
 at **distance‑from‑centre = score** (closer is better). Requires WebGL2 (a friendly message is shown if
-it's unavailable).
+it's unavailable). The black hole body and Orbital Roulette reveal are the defaults.
 
 ### Reveal mechanics (the "slot machine" moment)
 Selectable, satisfying gambles (bottom‑left selector, or `?reveal=`):
